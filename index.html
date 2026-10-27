@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Screen Iframe with Search</title>
+    <style>
+        /* Reset margins and force full viewport height */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevents double scrollbars */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top search container bar */
+        .search-bar-container {
+            background-color: #2c3e50;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .search-bar-container form {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .search-button {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Iframe container stretching to the remaining window space */
+        .iframe-container {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* The actual full-screen iframe element */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Search Header Bar -->
+    <div class="search-bar-container">
+        <form id="searchForm">
+            <input 
+                type="text" 
+                id="urlInput" 
+                class="search-input" 
+                placeholder="Enter a website URL (e.g., https://example.com) or search term..." 
+                required
+            >
+            <button type="submit" class="search-button">Go</button>
+        </form>
+    </div>
+
+    <!-- Full Screen Embedded Iframe Context -->
+    <div class="iframe-container">
+        <iframe 
+            id="targetIframe" 
+            src="https://example.com" 
+            title="Embedded Content Window"
+            allow="fullscreen"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent standard page reload
+            
+            let inputVal = document.getElementById('urlInput').value.trim();
+            let targetUrl = '';
+
+            // Check if input looks like a direct URL, otherwise treat as a search query
+            if (inputVal.startsWith('http://') || inputVal.startsWith('https://')) {
+                targetUrl = inputVal;
+            } else if (inputVal.includes('.') && !inputVal.includes(' ')) {
+                targetUrl = 'https://' + inputVal;
+            } else {
+                // If it's a search text phrase, redirect to a search engine inside the iframe
+                // Note: DuckDuckGo allows framing; Google and Bing block iframe framing via headers
+                targetUrl = 'https://duckduckgo.com' + encodeURIComponent(inputVal);
+            }
+
+            // Update the iframe source
+            document.getElementById('targetIframe').src = targetUrl;
+        });
+    </script>
+
+</body>
+</html>
